@@ -28,7 +28,7 @@ class _CustomFormState extends State<CustomForm> {
     super.initState();
     controller = TextEditingController(text: '');
     isEmailValid = null;
-    obsecuretext = true;
+    obsecuretext = widget.obsecureText;
   }
 
   @override

@@ -1,22 +1,30 @@
 // ignore: file_names
+// ignore_for_file: file_names, duplicate_ignore
+
 import 'package:flutter/material.dart';
 
+
 class HeaderSecPage extends StatelessWidget {
-  const HeaderSecPage({super.key, required this.image, required this.title});
+  const HeaderSecPage({
+    super.key,
+    required this.image,
+    required this.title,
+  });
 
   final String image;
   final String title;
 
   @override
   Widget build(BuildContext context) {
+   
+
     return Stack(children: [
       Expanded(
         child: Container(
           width: double.infinity,
           height: 270,
           decoration: BoxDecoration(
-              image:
-                  DecorationImage(image: AssetImage(image), fit: BoxFit.cover),
+              image: DecorationImage(image: NetworkImage(image), fit: BoxFit.cover),
               borderRadius: BorderRadius.circular(16)),
         ),
       ),

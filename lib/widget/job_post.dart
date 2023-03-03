@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:jobsapp/config/appcolor.dart';
+import 'package:jobsapp/models/job_model.dart';
 
 class JobPost extends StatelessWidget {
-  const JobPost(
-      {super.key, required this.title, required this.image, required this.subTitle});
-  final String title;
-  final String subTitle;
-  final String image;
+  final JobModel job;
+  
+  const JobPost(this.job, {super.key});
+
+  // const JobPost(
+  //     {super.key,
+  //     required this.title,
+  //     required this.image,
+  //     required this.subTitle});
+  // final String title;
+  // final String subTitle;
+  // final String image;
 
   @override
   Widget build(BuildContext context) {
@@ -14,8 +22,8 @@ class JobPost extends StatelessWidget {
       children: [
         Row(
           children: [
-            Image.asset(
-              image,
+            Image.network(
+              job.companyLogo!,
               height: 45,
             ),
             const SizedBox(
@@ -25,7 +33,7 @@ class JobPost extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  job.name!,
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -35,7 +43,7 @@ class JobPost extends StatelessWidget {
                   height: 5,
                 ),
                 Text(
-                  subTitle,
+                  job.companyName!,
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,

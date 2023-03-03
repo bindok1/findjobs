@@ -2,115 +2,114 @@ import 'package:flutter/material.dart';
 import 'package:jobsapp/config/appaset.dart';
 import 'package:jobsapp/config/appcolor.dart';
 import 'package:jobsapp/config/approute.dart';
-import 'package:jobsapp/widget/textcustomform.dart';
-import 'package:jobsapp/widget/textButton.dart';
-import 'package:jobsapp/widget/textformpage_email%20.dart';
 
-class StartedPage extends StatefulWidget {
-  StartedPage({super.key});
-
-  @override
-  State<StartedPage> createState() => _StartedPageState();
-}
-
-class _StartedPageState extends State<StartedPage> {
-  final TextEditingController emailController = TextEditingController(text: '');
-
-  final TextEditingController passwordController =
-      TextEditingController(text: '');
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
-        child: Column(
+    return Stack(
+      children: [
+        Image.asset(
+          AppAsset.iconBg,
+          height: MediaQuery.of(context).size.height,
+          fit: BoxFit.cover,
+        ),
+        Column(
           children: [
-            SafeArea(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Sign In',
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 16,
-                        color: AppColor.greyColor),
-                  ),
-                  const SizedBox(
-                    height: 2,
-                  ),
-                  Text(
-                    'Build Your Career',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge!
-                        .copyWith(fontSize: 24, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(
-                    height: 50,
-                  ),
-                  Center(
-                    child: Image.asset(
-                      AppAsset.signInPic,
-                      height: 240,
-                      width: 262,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 30, right: 30, top: 50),
+                    child: Text(
+                      'Build Your Next\nFuture Career Like\na Master',
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white),
                     ),
                   ),
-                  const SizedBox(
-                    height: 40,
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 30),
+                  child: Text(
+                    '18,000 jobs available',
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w300,
+                        color: Colors.white),
                   ),
-                  Column(
+                ),
+                const SizedBox(
+                  height: 400 + 12,
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Column(
                     children: [
-                      TextPage(
-                        textName: 'Email Address',
-                        controller: emailController,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      CustomForm(
-                        textName: 'Password',
-                        controller: passwordController,
-                        sufficIcon: true,
-                        obsecureText: true,
-                      ),
-                      const SizedBox(
-                        height: 40,
-                      ),
-                      ButtonCustom(
-                        label: 'Sign In',
-                        press: () {
-                          Navigator.pushNamed(context, AppRoute.primaryMenu);
-                        },
-                        isExpand: true,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, AppRoute.signUpPage);
-                        },
-                        child: Text(
-                          'Create New Account?',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(
-                                  fontSize: 14 + 4,
-                                  fontWeight: FontWeight.w300,
-                                  color: AppColor.greyColor),
+                      Container(
+                        width: 200,
+                        height: 45,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(66),
+                            color: Colors.white),
+                        child: Center(
+                          child: TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                    context, AppRoute.signUpPage);
+                              },
+                              child: Text(
+                                'Get Started',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge!
+                                    .copyWith(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 14,
+                                        color: AppColor.primary),
+                              )),
                         ),
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      Container(
+                        width: 200,
+                        height: 45,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(66),
+                            border: Border.all(color: Colors.white)),
+                        child: OutlinedButton(
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                  context, AppRoute.startedPage);
+                            },
+                            child: Text(
+                              'Sign In',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .copyWith(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500),
+                            )),
                       )
                     ],
-                  )
-                ],
-              ),
+                  ),
+                )
+              ],
             ),
           ],
-        ),
-      ),
+        )
+      ],
     );
   }
 }

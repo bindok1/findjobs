@@ -5,5 +5,5 @@ class AppRoute {
   static const startedPage = '/started_page';
   static const primaryMenu = '/primary_menu';
   static const secHomePage = '/secHome_page';
-  static const detailsJob = 'details_job';
+  static const detailsJob = '/details_job';
 }
