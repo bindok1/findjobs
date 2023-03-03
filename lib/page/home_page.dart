@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:jobsapp/config/appaset.dart';
 import 'package:jobsapp/config/appcolor.dart';
-import 'package:jobsapp/config/approute.dart';
+import 'package:jobsapp/models/category_models.dart';
+import 'package:jobsapp/models/job_model.dart';
+import 'package:jobsapp/providers/category_provider.dart';
+import 'package:jobsapp/providers/job_provider.dart';
+import 'package:jobsapp/providers/user_providers.dart';
+import 'package:jobsapp/widget/details_job.dart';
 import 'package:jobsapp/widget/job_post.dart';
 import 'package:jobsapp/widget/list_card.dart';
+import 'package:provider/provider.dart';
 
 class PrimaryMenu extends StatelessWidget {
   const PrimaryMenu({super.key});
 
   @override
   Widget build(BuildContext context) {
+    var userProvider = Provider.of<UserProvider>(context);
+    var categoryProvider = Provider.of<CategoryProvider>(context);
+    var jobProvider = Provider.of<JobProvider>(context);
+
     Widget header() {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -22,7 +32,7 @@ class PrimaryMenu extends StatelessWidget {
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
                       color: AppColor.greyColor)),
-              Text('Jason Powell',
+              Text(userProvider.user.name.toString(),
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
                       color: AppColor.blackColor,
                       fontSize: 24,
@@ -41,7 +51,8 @@ class PrimaryMenu extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(70),
                 child: ColorFiltered(
-                  colorFilter: const ColorFilter.mode(Colors.white, BlendMode.color),
+                  colorFilter:
+                      const ColorFilter.mode(Colors.white, BlendMode.color),
                   child: Image.asset(
                     AppAsset.showPic,
                     fit: BoxFit.cover,
@@ -68,76 +79,32 @@ class PrimaryMenu extends StatelessWidget {
           const SizedBox(
             height: 16,
           ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                InkWell(
-                  onTap: () {
-                    Navigator.pushNamed(context, AppRoute.secHomePage,
-                        arguments: {
-                          'image': AppAsset.card_1,
-                          'title': 'Web\nDeveloper'
-                        });
-                  },
-                  child: const ListCard(
-                    title: 'Web\nDeveloper',
-                    image: AppAsset.card_1,
-                  ),
-                ),
-                const SizedBox(
-                  width: 16,
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pushNamed(context, AppRoute.secHomePage,
-                        arguments: {
-                          'image': AppAsset.card_2,
-                          'title': 'App\nDeveloper'
-                        });
-                  },
-                  child: const ListCard(
-                    title: 'App\nDeveloper',
-                    image: AppAsset.card_2,
-                  ),
-                ),
-                const SizedBox(
-                  width: 16,
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pushNamed(context, AppRoute.secHomePage,
-                        arguments: {
-                          'image': AppAsset.card_3,
-                          'title': 'Content\nWriter'
-                        });
-                  },
-                  child: const ListCard(
-                    title: 'Content\nWriter',
-                    image: AppAsset.card_3,
-                  ),
-                ),
-                const SizedBox(
-                  width: 16,
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pushNamed(context, AppRoute.secHomePage,
-                        arguments: {
-                          'image': AppAsset.card_4,
-                          'title': 'Video\nGrapher'
-                        });
-                  },
-                  child: const ListCard(
-                    title: 'Video\nGrapher',
-                    image: AppAsset.card_4,
-                  ),
-                ),
-                const SizedBox(
-                  width: 16,
-                )
-              ],
-            ),
+          SizedBox(
+            height: 200,
+            child: FutureBuilder<List<CategoryModel>>(
+                future: categoryProvider.getCategories(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    int index = -1;
+                    return ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: snapshot.data!.map((category) {
+                          index++;
+                          return Container(
+                            margin: EdgeInsets.only(
+                                left: index == 0 ? 16 : 0, right: 16),
+                            child: ListCard(
+                              title: category.name!,
+                              image: category.imageUrl!,
+                            ),
+                          );
+                        }).toList());
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                }),
           ),
           const SizedBox(
             height: 30,
@@ -152,33 +119,58 @@ class PrimaryMenu extends StatelessWidget {
           const SizedBox(
             height: 25,
           ),
-          Column(
-            children: [
-              InkWell(
-                onTap: () {
-                  Navigator.pushNamed(context, AppRoute.detailsJob);
-                },
-                child: const JobPost(
-                    title: 'Front-End Developer',
-                    image: AppAsset.googleImage,
-                    subTitle: 'Google'),
-              ),
-              const SizedBox(
-                height: 16 + 16,
-              ),
-              const JobPost(
-                  title: 'Ui Designer',
-                  image: AppAsset.igImage,
-                  subTitle: 'Instragram'),
-              const SizedBox(
-                height: 32,
-              ),
-              const JobPost(
-                  title: 'Data Scientist',
-                  image: AppAsset.fbImage,
-                  subTitle: 'Facebook'),
-            ],
+          FutureBuilder<List<JobModel>>(
+            future: jobProvider.getJobs(),
+            builder: (
+              context,
+              snapshot,
+            ) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return Column(
+                  children: snapshot.data!
+                      .map((job) => InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          DetailsJob(job: job)));
+                            },
+                            child: JobPost(job),
+                          ))
+                      .toList(),
+                );
+              }
+              return const Center(child: CircularProgressIndicator());
+            },
           )
+          // Column(
+          //   children: [
+          //     InkWell(
+          //       onTap: () {
+          //         Navigator.pushNamed(context, AppRoute.detailsJob);
+          //       },
+          //       child: const JobPost(
+          //           title: 'Front-End Developer',
+          //           image: AppAsset.googleImage,
+          //           subTitle: 'Google'),
+          //     ),
+          //     const SizedBox(
+          //       height: 16 + 16,
+          //     ),
+          //     const JobPost(
+          //         title: 'Ui Designer',
+          //         image: AppAsset.igImage,
+          //         subTitle: 'Instragram'),
+          //     const SizedBox(
+          //       height: 32,
+          //     ),
+          //     const JobPost(
+          //         title: 'Data Scientist',
+          //         image: AppAsset.fbImage,
+          //         subTitle: 'Facebook'),
+          //   ],
+          // )
         ],
       );
     }
@@ -220,22 +212,25 @@ class PrimaryMenu extends StatelessWidget {
           ],
         ),
       ),
-      body: SafeArea(
-          child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              header(),
-              const SizedBox(
-                height: 30,
-              ),
-              body()
-            ]),
-          ),
-        ],
-      )),
+      body: SingleChildScrollView(
+        child: SafeArea(
+            child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    header(),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    body()
+                  ]),
+            ),
+          ],
+        )),
+      ),
     );
   }
 

@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:jobsapp/config/appaset.dart';
+import 'package:jobsapp/models/job_model.dart';
+import 'package:jobsapp/providers/job_provider.dart';
 import 'package:jobsapp/widget/headerSecPage.dart';
 import 'package:jobsapp/widget/job_post.dart';
+import 'package:provider/provider.dart';
 
 class SecHomePage extends StatelessWidget {
   const SecHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, String>? args =
-        ModalRoute.of(context)?.settings.arguments as Map<String, String>?;
-    final String? image = args?['image'].toString();
-    final String? title = args?['title'].toString();
+    var jobProvider = Provider.of<JobProvider>(context);
+    final Map args = ModalRoute.of(context)!.settings.arguments as Map;
+    final String title = args['title'] as String;
+    final String image = args['image'] as String;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -19,7 +22,7 @@ class SecHomePage extends StatelessWidget {
           physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
             children: [
-              HeaderSecPage(image: image!, title: title!),
+              HeaderSecPage(image: image, title: title),
               const SizedBox(height: 30),
               Align(
                 alignment: Alignment.topLeft,
@@ -39,58 +42,24 @@ class SecHomePage extends StatelessWidget {
                       const SizedBox(
                         height: 16,
                       ),
-                      const JobPost(
-                        title: 'Front-End Developer',
-                        image: AppAsset.googleImage,
-                        subTitle: 'Google',
-                      ),
-                      const SizedBox(
-                        height: 16.5,
-                      ),
-                      const JobPost(
-                          title: 'UI Designer',
-                          image: AppAsset.igImage,
-                          subTitle: 'Instragram'),
-                      const SizedBox(
-                        height: 16.5,
-                      ),
-                      const JobPost(
-                          title: 'Data Scientist',
-                          image: AppAsset.fbImage,
-                          subTitle: 'Facebook'),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      Text(
-                        'New Startups',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(
-                                fontSize: 16, fontWeight: FontWeight.w400),
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      const JobPost(
-                        title: 'Front-End Developer',
-                        image: AppAsset.googleImage,
-                        subTitle: 'Google',
-                      ),
-                      const SizedBox(
-                        height: 16.5,
-                      ),
-                      const JobPost(
-                          title: 'UI Designer',
-                          image: AppAsset.igImage,
-                          subTitle: 'Instragram'),
-                      const SizedBox(
-                        height: 16.5,
-                      ),
-                      const JobPost(
-                          title: 'Data Scientist',
-                          image: AppAsset.fbImage,
-                          subTitle: 'Facebook'),
+                      FutureBuilder<List<JobModel>>(
+                        future: jobProvider.getJobs(),
+                        builder: (
+                          context,
+                          snapshot,
+                        ) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            return Column(
+                              children: snapshot.data!
+                                  .map((job) => JobPost(
+                                     job))
+                                  .toList(),
+                            );
+                          }
+                          return const Center(child: CircularProgressIndicator());
+                        },
+                      )
                     ],
                   ),
                 ),

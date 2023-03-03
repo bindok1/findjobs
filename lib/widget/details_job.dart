@@ -1,11 +1,16 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:jobsapp/config/appaset.dart';
 import 'package:jobsapp/config/appcolor.dart';
+import 'package:jobsapp/models/job_model.dart';
 import 'package:jobsapp/widget/textButton.dart';
 import 'package:jobsapp/widget/textButtonApplied.dart';
 
+// ignore: must_be_immutable
 class DetailsJob extends StatefulWidget {
-  DetailsJob({super.key, this.isApplied = false});
+  late final JobModel job;
+  DetailsJob({super.key, required this.job});
 
   bool isApplied = false;
 
@@ -14,6 +19,37 @@ class DetailsJob extends StatefulWidget {
 }
 
 class _DetailsJobState extends State<DetailsJob> {
+  Widget JobDesc(String note) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Image.asset(
+            AppAsset.dot,
+            height: 12,
+          ),
+        ),
+        const SizedBox(
+          width: 8,
+        ),
+        Wrap(
+          direction: Axis.vertical,
+          children: [
+            Text(
+              note,
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w300,
+                    color: AppColor.blackColor,
+                  ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget applied() {
     if (widget.isApplied) {
       return cancelButton();
@@ -76,15 +112,15 @@ class _DetailsJobState extends State<DetailsJob> {
                       const SizedBox(
                         height: 30,
                       ),
-                      Image.asset(
-                        AppAsset.googleImage,
+                      Image.network(
+                        widget.job.companyLogo!,
                         height: 60,
                       ),
                       const SizedBox(
                         height: 20,
                       ),
                       Text(
-                        'Front-End Developer',
+                        widget.job.name!,
                         style: Theme.of(context).textTheme.titleLarge!.copyWith(
                             fontSize: 20,
                             fontWeight: FontWeight.w600,
@@ -94,7 +130,7 @@ class _DetailsJobState extends State<DetailsJob> {
                         height: 2,
                       ),
                       Text(
-                        'Google, Inc • Jakarta',
+                        '${widget.job.companyName} - ${widget.job.location}',
                         style: Theme.of(context)
                             .textTheme
                             .titleMedium!
@@ -114,50 +150,41 @@ class _DetailsJobState extends State<DetailsJob> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          JobTitle(context, 'About the Job'),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              JobTitle(context, 'About the Job'),
+                              Column(
+                                children: widget.job.about
+                                    .map((note) => JobDesc(note))
+                                    .toList(),
+                              )
+                            ],
+                          ),
                           const SizedBox(
                             height: 16,
-                          ),
-                          JobDesc(context, 'Full-Time On Site'),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          JobDesc(context, 'Start at \$18,000 per month'),
-                          const SizedBox(
-                            height: 30,
                           ),
                           JobTitle(context, 'Qualifications'),
+                          Column(
+                            children: widget.job.qualifications
+                                .map((note) => SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: JobDesc(note)))
+                                .toList(),
+                          ),
                           const SizedBox(
                             height: 16,
-                          ),
-                          JobDesc(context,
-                              "Candidate must possess at least a\nBachelor's Degree."),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          JobDesc(context,
-                              'Able to use Microsoft Office and Googl\nbased service.'),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          JobDesc(context,
-                              'Have an excellent time management,\ngood at organized and details'),
-                          const SizedBox(
-                            height: 30,
                           ),
                           JobTitle(context, 'Responsibilities'),
+                          Column(
+                            children: widget.job.responsibilities
+                                .map((note) => SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: JobDesc(note)))
+                                .toList(),
+                          ),
                           const SizedBox(
                             height: 16,
-                          ),
-                          JobDesc(context,
-                              'Initiate and promote any programs, events,\ntraining, or activities.'),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          JobDesc(context,
-                              'Assessing and anticipating needs and\ncollaborate with Division.'),
-                          const SizedBox(
-                            height: 51,
                           ),
                           Center(child: applied()),
                           const SizedBox(
@@ -185,35 +212,6 @@ class _DetailsJobState extends State<DetailsJob> {
           ),
         ),
       ),
-    );
-  }
-
-  Row JobDesc(
-    BuildContext context,
-    String note,
-  ) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 4),
-          child: Image.asset(
-            AppAsset.dot,
-            height: 12,
-          ),
-        ),
-        const SizedBox(
-          width: 8,
-        ),
-        Text(
-          note,
-          style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                fontSize: 14,
-                fontWeight: FontWeight.w300,
-                color: AppColor.blackColor,
-              ),
-        ),
-      ],
     );
   }
 
